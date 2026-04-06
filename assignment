@@ -8,7 +8,7 @@
 
 2\ class Container<T> 
 {
-private List <T> _lists;
+private List <T> _lists = new List <T>();
 void Add (T values){
   _lists.Add(values);
 }
@@ -45,6 +45,158 @@ public Swap <T> (T first , T second){
           if( item.CompareTo(max) > 0)
               max = item;
    }
+
+
+
+
+6\   هى انترفيس عاديه فى طريقه كتابتها وتطبيقها بأضافه ميزه انها تستقبل نوع بيانات غير محدد الا فى الكومبيل تايم وهذا ما يجعلها ميزه بحد ذاتها حيث لا يوجد اضطرار لعمل اكثر من انترفيس لكل نوع بيانات للميثودز بداخلها
+  تقوم الكلاسات الوارثه بتحديد النوع
+interface IRepository<T> {
+  void Add (T product);
+  List <T> GetAll ();
+  }
+
+
+
+7\struct معناه ان اى نوع مرسل يجب ان يكون 
+interface IRepository<T> where T : Product {}
+struct Product {}
+
+
+8\class معناه ان نوع البيانات المرسله يجب ان تكون 
+interface IRepository<T> where T : Product {}
+class Product {}
+
+
+
+9\ref type معناه ان نوع البيانات المرسله يجب ان تكون
+ويجب ان يكون لديها كونستركتور فاضي (منغير باراميتيرز) ويجب ان تكون نوع يصح عمل متغير منه 
+interface IRepository<T> where T : new () {}
+
+
+
+10\ interface لل implement لازم يعمل
+interface IRepository<T> {
+  void Add (T products);
+  List <T> GetAll ();
+  }
+
+class imp <T> where T : IRepository {
+private List <T> _Products = new List <T>();
+  void Add (T products) {
+     _Products.Add (products);
+  }
+  List <T> GetAll () => _Products;
+}
+class Product {}
+
+//In Main 
+IRepository <Product> repo = new imp(Product);
+repo.Add (new Product ());
+
+
+11\ يعنى لازم يرث من كلاس معين وهو اللى بيتكتب اسمه فى الكومبايل تايم وينفع يتعمل متغير من اى كلاس وارث من نفس الكلاس اللى ورثه
+ class Animal {}
+class Dog : Animal {}
+class Cat : Animal {}
+class Park <T> where T : Animal {}
+//In Main
+Park <Dog> dogs = new Dog ();
+Park <Cat> cats = new Cat ();
+
+
+
+12\ وبعضها لا generic تكتب اخر عنصر ويمكن كتابه بعضها new () بالترتيب حيث ان  constraintsيتم كتابه ال
+ class Mapper <TSource , TDest> 
+where TSource : IRepository
+where TDest : Product , new() {}
+
+
+
+
+13\int = 0 , string = "" بترجع قيمه المتغير الاصليه فى النظام مثل  
+
+
+
+14\ 
+T SafeList (int index) {
+ List <T> names = new List <T> (4);
+if (index >= names.Count)
+   return defualt (int);
+return names[index];
+}
+
+
+
+15\
+هو طريقه تسمح باستخدام النوع المشتقل بدلا من النوع الاساسي 
+child -> parant
+ومعنى out 
+انى لازم اخد بيانات بس ومينفعل اضيف وبالتالى يمكن استخدام اى نوع مشتق من الاب واستخدامه ليشير الى نوع اخر مشتق منه ايضا
+IEnumeraple <Dog> dogs = new List <Dog> ();
+IEnumeraple <Animal> animals = dogs;
+
+
+
+16\ هى (عكس الاتجاه)
+والمعنى انه ينفع استخدم نوع اب مع نوع مشتق بشرط وضع بيانات فقط ولا يسمح بقراءه بيانات 
+parant -> child
+
+
+17\
+covariance
+يعنى هل ينفع اتعامل مع نوع وارث على انه نوع اب
+وهو الاعم وتستخدم فى حاله اراده استخدام مشتقات اكثر من الاب بشرط اخراج المعلومات فقط
+contravariance :
+ هى تحديد ان البيانات سيتم ادخالها فقط وتكون العلاقه من الاب الى الابن 
+والعلاقه تكون عن استخدام النوع الاب للابن 
+
+
+
+18\
+كل نوع بيانات بيكون له
+instance 
+خاصه فى الهيب كأنه كائن مختلف 
+
+
+
+19\
+اقدر اورث مع تحديد نوع معين او اوررث مع ابقاء النوع غير محدد كما هو او مع 
+constraints
+
+
+20\ 
+class Cache <TKey , TValue> {
+ private Dictionary <TKey , (TValue value , DateTime? expiary) > _data 
+   = new Dictionary <TKey , (TValue , DateTime?) > ();
+
+public void Add (TKey key , TValue value , int? SecodsToExpire = null){
+   DateTime? expiary = null;
+   if (SecondsToExpire.HasValue)
+      expiary = DateTime.Now.AddSeconds(SecodsToExpire.Value);
+   _data [key] = (value , expiary);
+}
+
+public TValue Get (TKey key) {
+  if (!_data.ContainsKey(key))
+     return default(TValue);
+  var item = _data[key];
+  if (item.expiary.HasValue && item.expiary < DateTime.Now){
+     _data.Remove(key);
+    return default(TValue);
+  }
+  return item.value;
+}
+
+public bool Contains (TKey key){
+  return Get(key) != null; 
+}
+
+public void Remove (TKey key){
+  _data.Remove(key);
+}
+
+
 
 
 
